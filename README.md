@@ -11,6 +11,11 @@
 | D2  | Röle IN |
 | Opsiyonel: USB | Bilgisayar (güç + seri monitör). Bu sayede toprak nem sensörü kalibrasyonu yapabilirsiniz. |
 
+### Adaptör
+| Pin | Bağlantı |
+|-----|----------|
+| 12V  | Arduino Adaptör Girişi |
+
 ### Röle
 | Pin | Bağlantı |
 |-----|----------|
