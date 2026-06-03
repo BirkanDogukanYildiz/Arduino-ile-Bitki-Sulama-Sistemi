@@ -1,0 +1,61 @@
+#include <Arduino.h>
+
+#define SENSOR_PIN A0
+#define POMPA_PIN  2
+
+#define KURU_HAM   650
+#define ISLAK_HAM  300
+
+#define ESIK  330
+#define SULAMA_SURE   10000UL       // 10 saniye
+#define COOLDOWN_SURE 3600000UL     // 1 saat
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(POMPA_PIN, OUTPUT);
+  digitalWrite(POMPA_PIN, LOW); // Başlangıçta kapalı
+  
+  Serial.println("=== Otomatik Sulama ===");
+  Serial.println("Hazir!");
+  Serial.println("----------------------");
+}
+
+void loop() {
+  int ham = analogRead(SENSOR_PIN);
+  int nem = map(ham, KURU_HAM, ISLAK_HAM, 0, 100);
+  nem = constrain(nem, 0, 100);
+
+  Serial.print("Ham: ");
+  Serial.print(ham);
+  Serial.print("  |  Nem: ");
+  Serial.print(nem);
+  Serial.print("%");
+
+  if (ham >= ESIK) {
+    // Pompayı çalıştır
+    digitalWrite(POMPA_PIN, HIGH);
+    Serial.println("  |  POMPA: CALISIYOR");
+    delay(SULAMA_SURE);
+
+    // Pompayı durdur
+    digitalWrite(POMPA_PIN, LOW);
+    Serial.println("Sulama tamamlandi. 1 saat cooldown...");
+
+    // Cooldown — her dakika log at
+    unsigned long baslangic = millis();
+    while (millis() - baslangic < COOLDOWN_SURE) {
+      unsigned long gecen = (millis() - baslangic) / 60000;
+      Serial.print("Cooldown: ");
+      Serial.print(gecen);
+      Serial.println(" dk gecti");
+      delay(60000);
+    }
+
+    Serial.println("Cooldown bitti, olcume devam ediliyor.");
+  } else {
+    digitalWrite(POMPA_PIN, LOW);
+    Serial.println("  |  POMPA: KAPALI");
+  }
+
+  delay(500);
+}
